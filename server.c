@@ -74,17 +74,18 @@ int main(int argc, char* argv[])
         close(client_sockfd);   // Закрытике сокета клиента
     }
 
-    /* Д О Б А В И Т Ь   О П Е Р А Ц И Ю    X O R  */
+    /* О П Е Р А Ц И Я    X O R  */
 
-    // printf("path1:%s\n", temp_files_paths[0]);
-    // printf("path2:%s\n", temp_files_paths[1]);
+    printf("path1:%s\n", temp_files_paths[0]);
+    printf("path2:%s\n", temp_files_paths[1]);
 
-    // // Открытие файлов
-    // FILE* file1 = fopen(temp_files_paths[0], "r");
-    // FILE* file2 = fopen(temp_files_paths[1], "r");
-    // FILE* output = fopen("output_file", "w");
+    // Открытие файлов
+    FILE* file1 = fopen(temp_files_paths[0], "r");
+    FILE* file2 = fopen(temp_files_paths[1], "r");
+    FILE* output = fopen("output_file", "w");
 
-    // char ch1, ch2, result;
+    // Символы 1-го, 2-го файлов и результ XOR
+    char ch1, ch2, result;
 
     // if (file1 == NULL)
     // {
@@ -99,20 +100,32 @@ int main(int argc, char* argv[])
     //     printf("output: not open\n");
     // }
 
-    // // Проверка на открытие
-    // if (file1 == NULL || file2 == NULL || output == NULL) {
-    //     perror("Ошибка открытия файла");
-    //     return 1;
-    // }
+    printf(" Файлы открыты успешно\n");
 
-    // // XOR для каждого байта из двух файлов и запись результата в третий файл
-    // // Проверка что считался 1 байт из 2-ух файлов
-    // while ((fread(&ch1, 1, 1, file1) == 1) && (fread(&ch2, 1, 1, file2) == 1)) 
-    // {
-    //     result = ch1 ^ ch2;             // XOR
-    //     fwrite(&result, 1, 1, output);  // Запись в файл
-    // }
+    // Проверка на открытие
+    if (file1 == NULL || file2 == NULL || output == NULL) {
+        perror("Ошибка открытия файла");
+        return 1;
+    }
 
+    // XOR для каждого байта из двух файлов и запись результата в третий файл
+    // Проверка что считался 1 байт из 2-ух файлов
+    while (fread(&ch1, 1, 1, file1) == 1) 
+    {
+        // Если последовательность закончилась - считывать с начала
+        if (fread(&ch2, 1, 1, file2) != 1)
+        {
+            rewind(file2);              // Указатель на начало файла
+            fread(&ch2, 1, 1, file2);   // Считывание
+        }
+
+        result = ch1 ^ ch2;             // XOR
+        fwrite(&result, 1, 1, output);  // Запись в файл
+    }
+
+    // Очистка временных файлов
+    remove(temp_files_paths[0]);
+    remove(temp_files_paths[1]);
     
     free(buffer);
 
