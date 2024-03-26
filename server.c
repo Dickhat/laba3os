@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int main()
+int main(int argc, char* argv[])
 {
     int server_sockfd, client_sockfd;   // Дескрипторы сокета сервера и клиента
     int server_len, client_len;         // Длина адреса сервера и клиента
@@ -16,6 +16,8 @@ int main()
     struct sockaddr_un client_address;  // Адрес сокета клиента
     int process_query = 0;              // Число обработанных запросов клиентов
     char temp_files_paths[2][256];      // Путь к 2 временным файлам
+
+    printf(" Сервер работает\n");
 
     // Буфер сообщения
     char* buffer = (char*)malloc(8192*sizeof(char));        
@@ -31,7 +33,7 @@ int main()
     // Именование сокета сервера
     bind(server_sockfd, (struct sockaddr *)&server_address, server_len);
 
-    listen(server_sockfd, 2);   // Создание очереди запросов к сокету
+    listen(server_sockfd, 2);   // Создание очереди из 2 запросов к сокету
 
     // Пока не обработаются 2 запроса клиентов - ожидать запросы
     while (process_query != 2)
@@ -66,16 +68,53 @@ int main()
             reading_bytes = read(client_sockfd, buffer, BUFSIZ);
         }
 
-        close(client_sockfd);   // Закрытике сокета клиента
+        //printf("process_query = %d \n", process_query);
         process_query += 1;     // Следующий клиент
+
+        close(client_sockfd);   // Закрытике сокета клиента
     }
 
     /* Д О Б А В И Т Ь   О П Е Р А Ц И Ю    X O R  */
 
-    //printf("path1:%s\n", temp_files_paths[0]);
-    //printf("path1:%s\n", temp_files_paths[1]);
+    // printf("path1:%s\n", temp_files_paths[0]);
+    // printf("path2:%s\n", temp_files_paths[1]);
+
+    // // Открытие файлов
+    // FILE* file1 = fopen(temp_files_paths[0], "r");
+    // FILE* file2 = fopen(temp_files_paths[1], "r");
+    // FILE* output = fopen("output_file", "w");
+
+    // char ch1, ch2, result;
+
+    // if (file1 == NULL)
+    // {
+    //     printf("file1: not open\n");
+    // }
+    // else if (file2 == NULL)
+    // {
+    //     printf("file2: not open\n");
+    // }
+    // else if (output == NULL)
+    // {
+    //     printf("output: not open\n");
+    // }
+
+    // // Проверка на открытие
+    // if (file1 == NULL || file2 == NULL || output == NULL) {
+    //     perror("Ошибка открытия файла");
+    //     return 1;
+    // }
+
+    // // XOR для каждого байта из двух файлов и запись результата в третий файл
+    // // Проверка что считался 1 байт из 2-ух файлов
+    // while ((fread(&ch1, 1, 1, file1) == 1) && (fread(&ch2, 1, 1, file2) == 1)) 
+    // {
+    //     result = ch1 ^ ch2;             // XOR
+    //     fwrite(&result, 1, 1, output);  // Запись в файл
+    // }
+
     
     free(buffer);
 
-    return 0;
+    exit (0);
 }

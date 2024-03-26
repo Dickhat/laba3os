@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 int main(int argc, char* argv[])
 {
@@ -51,6 +52,7 @@ int main(int argc, char* argv[])
     else
     {
         printf(" Клиент %d не может подключиться к серверу\n", getpid());
+        printf("Ошибка: %s\n", strerror(errno));
         exit(1);
     }
 
